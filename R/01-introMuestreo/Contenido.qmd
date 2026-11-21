@@ -1,0 +1,62 @@
+---
+title: "Introducción al Muestreo con R"
+format: html
+editor: visual
+---
+
+## Introducción al muestreo
+
+El muestreo es un pilar de la inferencia estadística y las pruebas de hipótesis. Es fundamental en el análisis de encuestas y el diseño experimental. En esta parte veremos qué es el muestreo y por qué es útil, se comprenderán los problemas que causa el muestreo por conveniencia y conoceremos las diferencias entre aleatoriedad verdadera y pseudoaleatoriedad.
+
+## Muestreo simple con `dplyr`
+
+Trabajaremos con un conjunto de datos de canciones de Spotify. Cada fila del conjunto de datos representa una canción y hay 41,656 filas. Las columnas incluyen el nombre de la canción, los artistas que la interpretan, el año de lanzamiento y atributos como su duración, tempo y "bailabilidad". Empezaremos fijándonos en las duraciones.
+
+Nuestra primera tarea es tomar una muestra del conjunto de datos de canciones y comparar un cálculo en toda la población con el mismo cálculo en una muestra.
+
+```{r}
+# Cargamos el paquete `fst`
+library(fst)
+# Cargamos el tidyverso
+library(tidyverse)
+# Cargamos el archivo
+spotify_population <- read_fst("datasets/spotify_2000_2020.fst")
+# Echamos un vistazo al dataset
+head(spotify_population,5)
+```
+
+Realizaremos el muestreo de 1000 filas y lo asignaremos a la variable `spotify_sample`.
+
+```{r}
+spotify_sample <- spotify_population |> 
+    slice_sample(n = 1000)
+```
+
+Ahora podemos calcular la media tanto de la población como de la muestra para la columna de duración en minutos `duration_minutes`:
+
+```{r}
+# Calcular la media de la población
+mean_duration_pop <- spotify_population |> 
+  summarise(mean(duration_minutes))
+mean_duration_pop
+
+# Calcular la media de la muestra
+mean_duration_sample <- spotify_sample |> 
+  summarise(mean(duration_minutes))
+mean_duration_sample
+```
+
+## Muestreo con R base
+
+Si lo que deseamos es trabajar con vectores, podemos utilizar R base. Primero extraeremos la columna `loudness` de nuestro dataset y lo asignaremos a un vector llamado `loudness_pop`:
+
+```{r}
+loudness_pop <- spotify_population$loudness
+```
+
+Y ahora muestreamos:
+
+```{r}
+loudness_sample <- sample(loudness_pop, 100)
+loudness_sample
+```
